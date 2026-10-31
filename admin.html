@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Toko Bahagia</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--or:#ff6a00;--or2:#ff9500;--dark:#222;--muted:#767676;--line:#e8e8e8;--bg:#f4f4f4;--green:#1a9a4a;--red:#d6301f;--blue:#1f6fd1;--yellow:#b07800}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--dark);font-size:14px}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.hide{display:none!important}
+
+/* Login */
+#login{min-height:100vh;display:grid;place-items:center;padding:16px;background:linear-gradient(135deg,#7a2e0e,#ff7a1a)}
+.lbox{background:#fff;border-radius:18px;padding:28px;width:360px;max-width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.lbox .logo{font-size:22px;font-weight:800;color:var(--or);display:flex;gap:8px;align-items:center;margin-bottom:4px}
+.lbox p{color:var(--muted);margin-bottom:18px}
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
+.fld input,.fld select,.fld textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px}
+.fld small{color:var(--muted);font-size:12px}
+.btn{border:0;background:var(--or);color:#fff;border-radius:10px;padding:11px 16px;font-weight:700}
+.btn.full{width:100%}
+.btn:disabled{background:#ccc}
+.btn.g{background:var(--green)}.btn.r{background:var(--red)}.btn.b{background:var(--blue)}.btn.d{background:var(--dark)}
+.btn.o{background:#fff;color:var(--dark);border:1px solid #ccc}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:8px}
+.err{color:var(--red);font-size:13px;min-height:18px;margin:6px 0}
+
+/* Header */
+header{background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 0 var(--line)}
+.top{display:flex;align-items:center;gap:12px;padding:12px 0}
+.top .logo{font-weight:800;font-size:19px;color:var(--or);display:flex;align-items:center;gap:8px}
+.top .logo span{background:var(--dark);color:#fff;border-radius:6px;font-size:11px;padding:2px 7px}
+.top .sp{flex:1}
+.top a{color:var(--muted);font-size:13px;text-decoration:none}
+.tabs{display:flex;gap:4px}
+.tab{border:0;background:none;padding:10px 14px;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;position:relative}
+.tab.on{color:var(--or);border-color:var(--or)}
+.tab .n{background:var(--red);color:#fff;border-radius:10px;font-size:11px;padding:1px 6px;margin-left:4px}
+
+/* Toolbar */
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0 10px}
+.bar input[type=search]{flex:1;min-width:180px;padding:10px 14px;border:1px solid #ccc;border-radius:24px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 12px;font-size:13px;white-space:nowrap;font-weight:600}
+.chip.on{background:var(--dark);color:#fff;border-color:var(--dark)}
+.chip b{background:var(--or);color:#fff;border-radius:10px;padding:0 6px;margin-left:4px;font-size:11px}
+.chip.on b{background:#fff;color:var(--dark)}
+
+/* Order card */
+.list{display:grid;gap:12px;padding-bottom:40px}
+.oc{background:#fff;border-radius:14px;padding:14px 16px;border:1px solid var(--line)}
+.oh{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px dashed var(--line);padding-bottom:8px;margin-bottom:8px}
+.oh b{font-size:15px}
+.oh .t{color:var(--muted);font-size:12px}
+.st{border-radius:6px;padding:3px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+.st.v{background:#fff3c4;color:#7a5200}.st.o{background:#e8eefe;color:var(--blue)}.st.p{background:#f1f1f1;color:#555}
+.st.t{background:#fdecea;color:var(--red)}.st.l{background:#e3f6ea;color:var(--green)}.st.k{background:#e6f4ff;color:#0b5ea8}
+.st.s{background:#dff3e7;color:#0d5c30}.st.x{background:#eee;color:#888;text-decoration:line-through}
+.og{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.og .k{color:var(--muted);font-size:12px}
+.items{margin:2px 0 0 16px}
+.items li{margin:2px 0}
+.tot{display:flex;justify-content:space-between;font-weight:800;font-size:16px;margin-top:6px}
+.note{background:#fff8ec;border-radius:8px;padding:6px 10px;margin-top:8px;font-size:13px}
+.note.r{background:#fdecea;color:#7a1a10}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.acts input{width:120px;padding:7px 10px;border:1px solid #ccc;border-radius:8px}
+.acts .spc{flex:1}
+a.wa{color:var(--green);font-weight:700;text-decoration:none}
+.empty{text-align:center;color:var(--muted);padding:50px 10px}
+
+/* Produk */
+.pl{display:grid;gap:8px;padding-bottom:40px}
+.pr{background:#fff;border-radius:12px;padding:10px;display:flex;gap:12px;align-items:center;border:1px solid var(--line);cursor:pointer}
+.pr:hover{border-color:#ffd2b0}
+.pr img,.pr .ph{width:56px;height:56px;border-radius:8px;object-fit:contain;background:#f6f6f6;flex-shrink:0;display:grid;place-items:center;font-size:22px}
+.pr .inf{flex:1;min-width:0}
+.pr .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr .mt{color:var(--muted);font-size:12px;margin-top:2px}
+.pr .hg{font-weight:800;color:var(--or);white-space:nowrap;text-align:right}
+.tag{display:inline-block;font-size:11px;border-radius:4px;padding:1px 6px;margin-right:4px;background:#fff6ee;color:var(--or);font-weight:700}
+.tag.off{background:#eee;color:#888}
+
+/* Modal */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:none}
+.ovl.show{display:block}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;width:640px;max-width:calc(100% - 24px);max-height:92vh;overflow:auto;z-index:50;display:none;padding:20px}
+.modal.show{display:block}
+.modal.sm{width:420px}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px}
+.mh h3{font-size:18px}
+.x{border:0;background:none;font-size:26px;line-height:1}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+.box{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.box h4{font-size:14px;margin-bottom:4px}
+.box p.h{color:var(--muted);font-size:12px;margin-bottom:10px}
+.vr{display:grid;grid-template-columns:1.6fr 1fr .8fr 34px;gap:6px;margin-bottom:6px;align-items:center}
+.vr.pil{grid-template-columns:1fr 2fr 34px}
+.vr input{width:100%;padding:8px;border:1px solid #ccc;border-radius:8px}
+.vr .hd{font-size:11px;color:var(--muted);font-weight:700}
+.del{border:0;background:#fdecea;color:var(--red);border-radius:8px;height:34px;font-size:16px}
+.qb{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.qb button{border:1px dashed var(--or);background:#fff6ee;color:var(--or);border-radius:8px;padding:6px 10px;font-weight:700;font-size:12px}
+.prev{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.prev img{width:64px;height:64px;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:#fafafa}
+.chk{display:flex;align-items:center;gap:8px;font-weight:700}
+.chk input{width:18px;height:18px}
+.mf{display:flex;gap:8px;justify-content:flex-end;margin-top:10px;position:sticky;bottom:-20px;background:#fff;padding:12px 0 2px}
+#buktiImg{max-width:100%;border-radius:8px;display:block;margin:0 auto}
+/* Banner */
+.bl{display:grid;gap:12px;padding-bottom:40px}
+.bc{background:#fff;border-radius:14px;border:1px solid var(--line);padding:12px;display:grid;grid-template-columns:minmax(0,1.6fr) 1fr;gap:14px;align-items:center}
+.bc.off{opacity:.55}
+.bc .ctl{display:flex;flex-direction:column;gap:8px}
+.bc .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bc .lk{font-size:12px;color:var(--muted);word-break:break-all}
+.bprev{position:relative;aspect-ratio:3.1/1;border-radius:14px;overflow:hidden;color:#fff;display:flex;align-items:center;background:var(--c);background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--c) 70%,#000) 0%,var(--c) 55%,color-mix(in srgb,var(--c) 65%,#fff) 100%)}
+.bprev>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bprev.img::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.5),transparent 70%);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 92%,transparent) 0%,color-mix(in srgb,var(--c) 55%,transparent) 42%,transparent 70%)}
+.bprev.img.notext::after{display:none}
+.bprev .bt{position:relative;z-index:1;padding:14px 20px;max-width:64%}
+.bprev h2{font-size:clamp(15px,2.2vw,24px);line-height:1.15;letter-spacing:-.3px}
+.bprev p{font-size:12px;margin-top:5px;opacity:.95}
+.bprev .tb{display:inline-block;margin-top:9px;background:#fff;color:#111;border-radius:99px;padding:5px 12px;font-weight:800;font-size:11px}
+.sw{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sw button{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #ddd}
+.sw input[type=color]{width:40px;height:32px;border:1px solid #ccc;border-radius:8px;padding:2px;background:#fff}
+.upbtn{border:1px dashed var(--or);background:#fff6ee;color:var(--or);border-radius:8px;padding:9px 12px;font-weight:700;font-size:13px;white-space:nowrap}
+.upbtn:disabled{opacity:.6}
+.tag.on{background:#e3f6ea;color:var(--green)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 20px;border-radius:24px;z-index:70;opacity:0;transition:.3s;pointer-events:none;max-width:90%;text-align:center}
+.toast.show{opacity:1}
+.load{opacity:.55;pointer-events:none}
+
+@media(max-width:700px){
+  .bc{grid-template-columns:1fr}
+  .og,.g2{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr 1fr}
+  .g3>:first-child{grid-column:1/-1}
+  .top a.lk{display:none}
+  .vr{grid-template-columns:1.3fr 1fr .7fr 34px}
+}
+</style>
+</head>
+<body>
+<script>
+/* Tampilkan error JavaScript di layar agar mudah dilaporkan */
+window.__errAdmin = [];
+window.onerror = function(msg, src, line, col){
+  window.__errAdmin.push(msg + ' (baris ' + line + ':' + col + ')');
+  var el = document.getElementById('lErr');
+  if (el) el.textContent = '⚠️ Error halaman: ' + msg + ' (baris ' + line + ')';
+};
+document.addEventListener('DOMContentLoaded', function(){ var j=document.getElementById('jsStatus'); if (j && j.textContent.indexOf('BELUM')>=0) j.textContent='🟠 Admin v10 · skrip awal jalan, skrip utama BELUM'; });
+function lihatPw(btn){ var i = document.getElementById('pw'); i.type = i.type === 'password' ? 'text' : 'password'; btn.textContent = i.type === 'password' ? 'Lihat' : 'Sembunyi'; }
+function kirimLogin(ev){
+  ev.preventDefault();
+  if (typeof window.masukAdmin === 'function') return window.masukAdmin();
+  var el = document.getElementById('lErr');
+  el.textContent = '⚠️ Skrip admin gagal dimuat. ' + (window.__errAdmin.length ? 'Detail: ' + window.__errAdmin.join(' | ') : 'Muat ulang halaman (Ctrl+Shift+R). Bila tetap, pastikan isi file "Admin" di Apps Script lengkap sampai baris </html>.');
+}
+</script>
+<script type="application/json" id="cfg">{}</script>
+
+<!-- ========== LOGIN ========== -->
+<section id="login">
+  <form class="lbox" onsubmit="kirimLogin(event)">
+    <div class="logo">🛒 <span id="lNama">Toko Bahagia</span></div>
+    <p>Masuk ke halaman admin</p>
+    <div class="fld"><label for="pw">Password admin</label>
+      <div style="position:relative"><input id="pw" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" required style="padding-right:76px">
+      <button type="button" onclick="lihatPw(this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:#f3f3f3;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:700">Lihat</button></div>
+      <small>Bukan password akun Google. Isi sesuai sheet Pengaturan → PasswordAdmin.</small></div>
+    <div class="err" id="lErr"></div>
+    <button class="btn full" id="lBtn">Masuk</button>
+    <p style="margin:14px 0 0;font-size:12px">Password diatur di sheet <b>Pengaturan</b> → <b>PasswordAdmin</b>.</p>
+    <p id="jsStatus" style="margin:10px 0 0;font-size:12px;font-weight:700;color:#d6301f">🔴 Admin v10 · skrip BELUM berjalan</p>
+  </form>
+</section>
+
+<!-- ========== PANEL ========== -->
+<section id="app" class="hide">
+  <header>
+    <div class="wrap">
+      <div class="top">
+        <div class="logo">🛒 <b id="hNama">Toko Bahagia</b> <span>ADMIN</span></div>
+        <div class="sp"></div>
+        <a class="lk" id="lToko" href="#">↗ Lihat toko</a>
+        <button class="btn o sm" onclick="keluar()">Keluar</button>
+      </div>
+      <div class="tabs">
+        <button class="tab on" id="tPes" onclick="gantiTab('pes')">📦 Pesanan<span class="n hide" id="nCek"></span></button>
+        <button class="tab" id="tPro" onclick="gantiTab('pro')">🏷️ Produk & Varian</button>
+        <button class="tab" id="tBan" onclick="gantiTab('ban')">🖼️ Banner</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Pesanan -->
+    <div id="vPes">
+      <div class="bar">
+        <input type="search" id="qPes" placeholder="Cari no. pesanan, nama, HP, produk..." oninput="renderPes()">
+        <button class="btn o sm" onclick="muatPes()">↻ Muat ulang</button>
+      </div>
+      <div class="chips" id="fPes"></div>
+      <div class="list" id="lPes"><div class="empty">Memuat pesanan...</div></div>
+    </div>
+
+    <!-- Produk -->
+    <div id="vPro" class="hide">
+      <div class="bar">
+        <input type="search" id="qPro" placeholder="Cari produk..." oninput="renderPro()">
+        <select id="kPro" onchange="renderPro()" style="padding:9px;border:1px solid #ccc;border-radius:8px"></select>
+        <label class="chk" style="font-weight:600;font-size:13px"><input type="checkbox" id="offPro" onchange="renderPro()"> nonaktif</label>
+        <button class="btn sm" onclick="editProduk(null)">+ Produk baru</button>
+      </div>
+      <div class="chips" id="fPro"></div>
+      <div class="pl" id="lPro"><div class="empty">Memuat produk...</div></div>
+    </div>
+
+    <!-- Banner -->
+    <div id="vBan" class="hide">
+      <div class="bar">
+        <div style="flex:1;color:var(--muted);font-size:13px;min-width:220px">Banner aktif tampil bergantian di halaman depan toko sesuai urutan. Bila tidak ada banner aktif, toko memakai banner bawaan.</div>
+        <button class="btn o sm" onclick="muatBan()">↻ Muat ulang</button>
+        <button class="btn sm" onclick="editBanner(null)">+ Banner baru</button>
+      </div>
+      <div class="bl" id="lBan"><div class="empty">Memuat banner...</div></div>
+    </div>
+  </main>
+</section>
+
+<div class="ovl" id="ovl" onclick="tutup()"></div>
+
+<!-- Editor banner -->
+<div class="modal" id="mBan">
+  <div class="mh"><h3 id="bnJudul">Banner baru</h3><button class="x" onclick="tutup()">×</button></div>
+  <div class="bprev" id="bnPrev" style="--c:#c2410c"></div>
+  <p style="color:var(--muted);font-size:12px;margin:6px 0 14px">Pratinjau. Di HP, sisi kanan gambar bisa sedikit terpotong.</p>
+  <div class="fld"><label>Gambar banner</label>
+    <div style="display:flex;gap:6px"><input id="bnGambar" placeholder="Tempel link gambar, atau klik Upload →" oninput="pratinjauBanner()"><button type="button" class="upbtn" id="bnUp" onclick="uploadKe('bnGambar', true)">📤 Upload</button></div>
+    <small>Ukuran ideal 1200 × 400 px (rasio 3:1). Boleh dikosongkan, banner cukup memakai warna latar.</small>
+  </div>
+  <div class="fld"><label>Judul</label><input id="bnJ" maxlength="80" placeholder="mis. Promo Minyak Goreng" oninput="pratinjauBanner()"></div>
+  <div class="fld"><label>Subjudul</label><input id="bnS" maxlength="160" placeholder="mis. Hemat sampai Rp 5.000 per liter" oninput="pratinjauBanner()"></div>
+  <div class="g2">
+    <div class="fld"><label>Teks tombol</label><input id="bnT" maxlength="30" placeholder="mis. Belanja sekarang" oninput="pratinjauBanner()"></div>
+    <div class="fld"><label>Saat banner diklik</label>
+      <select id="bnAksi" onchange="aturAksi()">
+        <option value="">Gulir ke daftar produk</option>
+        <option value="kat">Buka kategori</option>
+        <option value="cari">Cari kata tertentu</option>
+        <option value="produk">Buka produk tertentu</option>
+        <option value="url">Buka link lain</option>
+      </select>
+    </div>
+  </div>
+  <div class="fld" id="bnNilaiBox" style="display:none"><label id="bnNilaiLbl">Nilai</label>
+    <select id="bnKat"></select>
+    <input id="bnNilai">
+    <datalist id="dlPro"></datalist>
+  </div>
+  <div class="fld"><label>Warna latar</label>
+    <div class="sw" id="bnSw"></div>
+  </div>
+  <label class="chk"><input type="checkbox" id="bnAktif" checked> Tampilkan di toko (aktif)</label>
+  <div class="err" id="bnErr"></div>
+  <div class="mf"><button class="btn o" onclick="tutup()">Batal</button><button class="btn" id="bnSimpan" onclick="simpanBanner()">💾 Simpan banner</button></div>
+</div>
+
+<!-- Bukti -->
+<div class="modal" id="mBukti">
+  <div class="mh"><h3>Bukti pembayaran <span id="bNo" style="color:var(--muted);font-size:13px"></span></h3><button class="x" onclick="tutup()">×</button></div>
+  <div id="bIsi">Memuat...</div>
+  <div class="note" id="bInfo" style="margin-top:10px"></div>
+  <div class="mf" id="bAct"></div>
+</div>
+
+<!-- Alasan (tolak / batal) -->
+<div class="modal sm" id="mAlasan">
+  <div class="mh"><h3 id="aJudul">Alasan</h3><button class="x" onclick="tutup()">×</button></div>
+  <div class="fld"><label id="aLabel">Alasan (akan terlihat oleh pembeli)</label><textarea id="aTeks" rows="3"></textarea></div>
+  <div class="qb" id="aCepat"></div>
+  <div class="mf"><button class="btn o" onclick="tutup()">Batal</button><button class="btn r" id="aOk">Simpan</button></div>
+</div>
+
+<!-- Editor produk -->
+<div class="modal" id="mPro">
+  <div class="mh"><h3 id="pJudul">Edit produk</h3><button class="x" onclick="tutup()">×</button></div>
+  <div class="fld"><label>Nama produk</label><input id="pNama"></div>
+  <div class="g3">
+    <div class="fld"><label>Kategori</label><input id="pKat" list="dlKat"><datalist id="dlKat"></datalist></div>
+    <div class="fld"><label>Satuan</label><input id="pSat" placeholder="pcs"></div>
+    <div class="fld"><label>Stok</label><input id="pStok" inputmode="numeric" placeholder="kosong = tak terbatas"></div>
+  </div>
+
+  <div class="box">
+    <h4>💰 Harga satuan & harga grosir</h4>
+    <p class="h">Tanpa varian: pembeli hanya bisa beli satuan dengan harga di bawah. Tambahkan harga grosir (renteng / pak / dus), maksimal 3. Tersimpan di sheet pada kolom <b>Varian A/B/C</b> dan <b>Harga A/B/C</b>.<br><b>Isi</b> = jumlah satuan per varian (dipakai untuk mengurangi stok).</p>
+    <div class="fld" id="boxHarga"><label>Harga satuan (Rp)</label><input id="pHarga" inputmode="numeric"></div>
+    <div id="vWrap">
+      <div class="fld"><label>Judul pilihan di toko</label><input id="pLabel" placeholder="Kuantitas"></div>
+      <div class="vr"><span class="hd">Nama varian</span><span class="hd">Harga (Rp)</span><span class="hd">Isi</span><span></span></div>
+      <div id="vRows"></div>
+    </div>
+    <div class="qb" id="qbVar">
+      <button type="button" onclick="tambahVar('Renteng isi 10',0,10)">+ Renteng</button>
+      <button type="button" onclick="tambahVar('Pak isi 20',0,20)">+ Pak</button>
+      <button type="button" onclick="tambahVar('Dus isi 40',0,40)">+ Dus / Grosir</button>
+      <button type="button" onclick="tambahVar('',0,1)">+ Varian lain</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <h4>👕 Pilihan tanpa beda harga (Ukuran / Warna / Rasa)</h4>
+    <p class="h">Wajib dipilih pembeli. Pisahkan opsi dengan koma.</p>
+    <div id="gRows"></div>
+    <div class="qb">
+      <button type="button" onclick="tambahPil('Ukuran','S, M, L, XL')">+ Ukuran</button>
+      <button type="button" onclick="tambahPil('Warna','')">+ Warna</button>
+      <button type="button" onclick="tambahPil('Rasa','')">+ Rasa</button>
+      <button type="button" onclick="tambahPil('','')">+ Lainnya</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <h4>🖼️ Foto (bisa lebih dari satu)</h4>
+    <p class="h">Satu link per baris. Foto pertama jadi foto utama. <a id="pCari" target="_blank" rel="noopener">🔍 Cari foto di Google</a></p>
+    <textarea id="pGambar" rows="3" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:8px" oninput="pratinjau()" placeholder="https://..."></textarea>
+    <button type="button" class="upbtn" id="pUp" style="margin-top:6px" onclick="uploadKe('pGambar', false)">📤 Upload foto dari HP / komputer</button>
+    <div class="prev" id="pPrev"></div>
+  </div>
+
+  <div class="fld"><label>Deskripsi</label><textarea id="pDesk" rows="4"></textarea></div>
+  <label class="chk"><input type="checkbox" id="pAktif"> Tampilkan di toko (aktif)</label>
+  <div class="err" id="pErr"></div>
+  <div class="mf"><button class="btn o" onclick="tutup()">Batal</button><button class="btn" id="pSimpan" onclick="simpanProduk()">💾 Simpan</button></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var CFG = {namaToko:'Toko Bahagia', urlToko:'', kategori:[]};
+try { Object.assign(CFG, JSON.parse(document.getElementById('cfg').textContent)); } catch(e) {}
+const IS_GAS = typeof google !== 'undefined' && google.script && google.script.run;
+
+/* Alamat API Apps Script. Kosong = halaman ini berjalan di dalam Apps Script / preview.
+   Di versi Netlify baris ini diisi otomatis dengan link /exec Apps Script. */
+const API_URL = 'https://script.google.com/macros/s/AKfycbysYLqEYgmILgI2GOmSo1ADj-GJ8g0RAeZVEdXeTCyW77QFqihjQishGQYLGWbry7PzTg/exec';
+async function apiCall(fn, args){
+  let r;
+  try { r = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({fn: fn, args: args}), redirect:'follow'}); }
+  catch(e){ throw new Error('Tidak bisa terhubung ke server. Periksa koneksi internet lalu coba lagi.'); }
+  if (!r.ok) throw new Error('Server sedang bermasalah (' + r.status + '). Coba lagi sebentar.');
+  let j; try { j = await r.json(); } catch(e){ throw new Error('Balasan server tidak terbaca. Pastikan Apps Script sudah di-deploy versi terbaru dengan akses "Anyone".'); }
+  if (!j.ok) throw new Error(j.error || 'Terjadi kesalahan.');
+  return j.data;
+}
+const $ = id => document.getElementById(id);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rp = n => n===null||n===undefined||n==='' ? '—' : 'Rp ' + Number(n).toLocaleString('id-ID');
+const ST = { BAYAR:'Menunggu pembayaran', ONGKIR:'Menunggu konfirmasi ongkir', VER:'Menunggu verifikasi', TOLAK:'Bukti ditolak', LUNAS:'Dibayar', KIRIM:'Dikirim', SELESAI:'Selesai', BATAL:'Dibatalkan' };
+const KELAS_ST = {[ST.VER]:'v',[ST.ONGKIR]:'o',[ST.BAYAR]:'p',[ST.TOLAK]:'t',[ST.LUNAS]:'l',[ST.KIRIM]:'k',[ST.SELESAI]:'s',[ST.BATAL]:'x'};
+const FILTER_PES = [
+  ['cek','🔔 Perlu dicek',[ST.VER]], ['ongkir','📏 Isi ongkir',[ST.ONGKIR]], ['belum','⏳ Belum bayar',[ST.BAYAR,ST.TOLAK,'Baru']],
+  ['lunas','💰 Dibayar',[ST.LUNAS]], ['kirim','🚚 Dikirim',[ST.KIRIM]], ['selesai','✅ Selesai',[ST.SELESAI]], ['batal','✖ Dibatalkan',[ST.BATAL]], ['semua','Semua',null]
+];
+let admTok = null, DAFTAR_PES = [], DAFTAR_PRO = [], fPes = 'cek', fProK = '', tAuto = null;
+try { admTok = sessionStorage.getItem('adm_token'); } catch(e) {}
+
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('show'),2200); }
+
+function call(fn, ...args){
+  return new Promise((res, rej) => {
+    const gagal = e => { const m = String(e && e.message || e); if (m.includes('SESI_HABIS')) { sesiHabis(); rej('Sesi habis, silakan login lagi.'); } else rej(m.replace(/^Error: ?/,'')); };
+    if (IS_GAS) return google.script.run.withSuccessHandler(res).withFailureHandler(gagal)[fn](...args);
+    if (API_URL) return apiCall(fn, args).then(res, gagal);
+    setTimeout(()=>{ try{ res(DEMO_ADMIN[fn](...args)); }catch(e){ gagal(e); } }, 200);
+  });
+}
+
+/* ---------- Login ---------- */
+async function masukAdmin(){
+  // dipanggil oleh kirimLogin()
+  $('lBtn').disabled = true; $('lBtn').textContent = 'Memeriksa...'; $('lErr').textContent = '';
+  try{
+    const r = await call('adminLogin', $('pw').value);
+    admTok = r.token; try{ sessionStorage.setItem('adm_token', admTok); }catch(e){}
+    $('pw').value = '';
+    mulai();
+  }catch(e){ $('lErr').textContent = e || 'Gagal masuk. Coba muat ulang halaman.'; }
+  $('lBtn').disabled = false; $('lBtn').textContent = 'Masuk';
+}
+function sesiHabis(){
+  admTok = null; try{ sessionStorage.removeItem('adm_token'); }catch(e){}
+  clearInterval(tAuto); tutup();
+  $('app').classList.add('hide'); $('login').classList.remove('hide');
+  $('lErr').textContent = 'Sesi berakhir, silakan masuk lagi.';
+}
+async function keluar(){ try{ await call('adminLogout', admTok); }catch(e){} sesiHabis(); $('lErr').textContent=''; }
+function mulai(){
+  $('login').classList.add('hide'); $('app').classList.remove('hide');
+  muatPes(); clearInterval(tAuto); tAuto = setInterval(()=>{ if(!document.hidden && !$('ovl').classList.contains('show')) muatPes(true); }, 60000);
+}
+function gantiTab(t){
+  [['pes','tPes','vPes'],['pro','tPro','vPro'],['ban','tBan','vBan']].forEach(([k,tb,v])=>{ $(tb).classList.toggle('on', t===k); $(v).classList.toggle('hide', t!==k); });
+  if (t==='pro') { if (DAFTAR_PRO.length) { isiKategori(); renderPro(); } else muatPro(); }
+  if (t==='ban') muatBan();
+}
+
+/* ---------- Pesanan ---------- */
+async function muatPes(diam){
+  if (!diam) $('lPes').classList.add('load');
+  try{
+    const r = await call('adminPesanan', admTok);
+    DAFTAR_PES = r.list;
+    renderFilter(r.hitung); renderPes();
+  }catch(e){ if(!diam) $('lPes').innerHTML = `<div class="empty">${esc(e)}</div>`; }
+  $('lPes').classList.remove('load');
+}
+function renderFilter(h){
+  h = h || {};
+  const n = f => f[2] ? f[2].reduce((s,x)=>s+(h[x]||0),0) : DAFTAR_PES.length;
+  $('fPes').innerHTML = FILTER_PES.map(f=>`<button class="chip ${fPes===f[0]?'on':''}" onclick="fPes='${f[0]}';renderFilter(window._h);renderPes()">${f[1]}${n(f)&&f[0]!=='semua'&&f[0]!=='selesai'&&f[0]!=='batal'?`<b>${n(f)}</b>`:''}</button>`).join('');
+  window._h = h;
+  const cek = (h[ST.VER]||0) + (h[ST.ONGKIR]||0);
+  $('nCek').textContent = cek; $('nCek').classList.toggle('hide', !cek);
+  document.title = (cek?`(${cek}) `:'') + 'Admin - ' + CFG.namaToko;
+}
+function waLink(o, teks){ let hp = String(o.hp); if (hp.charAt(0) === '0') hp = '62' + hp.slice(1); return `https:\/\/wa.me/${hp}?text=${encodeURIComponent(teks)}`; }
+function waTeks(o){
+  const h = `Halo ${o.nama}, pesanan ${o.no} di ${CFG.namaToko}`;
+  if (o.status===ST.LUNAS) return `${h} sudah kami terima pembayarannya ✅ dan sedang kami siapkan. Terima kasih!`;
+  if (o.status===ST.KIRIM) return `${h} sedang ${o.pengiriman==='Ambil di toko'?'siap diambil di toko':'dalam perjalanan ke alamat Anda'} 🚚.`;
+  if (o.status===ST.TOLAK) return `${h}: bukti pembayaran belum sesuai (${o.catatanAdmin}). Mohon upload ulang lewat menu Pesanan di website ya.`;
+  if (o.status===ST.ONGKIR) return `${h}: jarak pengiriman ±${o.jarak} km. Ongkirnya Rp ... , total jadi Rp ... . Apakah setuju?`;
+  if (o.status===ST.BAYAR) return `${h}: total ${rp(o.total)}. Silakan lakukan pembayaran lalu upload bukti di menu Pesanan ya.`;
+  return `${h}.`;
+}
+function kartuPes(o){
+  const items = o.items.split(';').map(x=>x.trim()).filter(Boolean).map(s=>`<li>${esc(s)}</li>`).join('');
+  let a = '';
+  if (o.status===ST.VER) a += `<button class="btn b sm" onclick="lihatBukti('${o.no}')">🧾 Lihat bukti</button><button class="btn g sm" onclick="aksi('${o.no}','acc')">✅ ACC</button><button class="btn r sm" onclick="minta('${o.no}','tolak')">❌ Tolak</button>`;
+  if ([ST.BAYAR,ST.TOLAK,'Baru'].includes(o.status)) a += `${o.bukti?`<button class="btn b sm" onclick="lihatBukti('${o.no}')">🧾 Bukti lama</button>`:''}<button class="btn g sm" onclick="aksi('${o.no}','acc',null,'Tandai LUNAS tanpa bukti di website? Pastikan uang sudah masuk.')">✅ Tandai lunas</button>`;
+  if ([ST.ONGKIR,ST.BAYAR,ST.VER,ST.TOLAK].includes(o.status)) a += `<input id="ong_${o.no}" inputmode="numeric" placeholder="Ongkir Rp" value="${o.ongkir??''}"><button class="btn ${o.status===ST.ONGKIR?'':'o'} sm" onclick="aksi('${o.no}','ongkir',{ongkir:$('ong_${o.no}').value.replace(/\\D/g,'')})">💾 ${o.status===ST.ONGKIR?'Simpan ongkir':'Ubah ongkir'}</button>`;
+  if (o.status===ST.LUNAS) a += `<button class="btn b sm" onclick="aksi('${o.no}','kirim')">🚚 ${o.pengiriman==='Ambil di toko'?'Siap diambil':'Tandai dikirim'}</button>`;
+  if ([ST.LUNAS,ST.KIRIM].includes(o.status)) a += `<button class="btn g sm" onclick="aksi('${o.no}','selesai')">✔ Selesai</button>`;
+  if (o.status===ST.LUNAS && o.bukti) a += `<button class="btn o sm" onclick="lihatBukti('${o.no}')">🧾 Bukti</button>`;
+  a += `<span class="spc"></span><a class="wa" target="_blank" rel="noopener" href="${esc(waLink(o, waTeks(o)))}">💬 WA pembeli</a>`;
+  if (![ST.SELESAI,ST.BATAL].includes(o.status)) a += `<button class="btn o sm" style="color:var(--red)" onclick="minta('${o.no}','batal')">Batalkan</button>`;
+  return `<div class="oc" id="o_${o.no}">
+    <div class="oh"><div><b>${esc(o.no)}</b> <span class="t">· ${esc(o.tanggal)}</span></div><span class="st ${KELAS_ST[o.status]||'p'}">${esc(o.status||'-')}</span></div>
+    <div class="og">
+      <div>
+        <div class="k">Pembeli</div><div><b>${esc(o.nama)}</b> · ${esc(o.hp)}</div>
+        <div class="k" style="margin-top:6px">${esc(o.pengiriman)}${o.jarak!==''?` · ±${esc(o.jarak)} km`:''}</div>
+        <div>${esc(o.alamat)} ${o.lokasi?`<a href="${esc(o.lokasi)}" target="_blank" rel="noopener">📍 Peta</a>`:''}</div>
+        ${o.catatan?`<div class="k" style="margin-top:6px">Catatan pembeli</div><div>${esc(o.catatan)}</div>`:''}
+      </div>
+      <div>
+        <div class="k">Barang</div><ul class="items">${items}</ul>
+        <div style="display:flex;justify-content:space-between;margin-top:6px"><span class="k">Subtotal</span><span>${rp(o.subtotal)}</span></div>
+        <div style="display:flex;justify-content:space-between"><span class="k">Ongkir</span><span>${o.ongkir===null?(o.pengiriman==='Diantar'?'<b style="color:var(--blue)">belum diisi</b>':'—'):rp(o.ongkir)}</span></div>
+        <div class="tot"><span>Total · ${esc(o.pembayaran)}</span><span style="color:var(--or)">${rp(o.total)}</span></div>
+      </div>
+    </div>
+    ${o.catatanAdmin?`<div class="note ${[ST.TOLAK,ST.BATAL].includes(o.status)?'r':''}">📝 ${esc(o.catatanAdmin)}</div>`:''}
+    <div class="acts">${a}</div>
+  </div>`;
+}
+function renderPes(){
+  const f = FILTER_PES.find(x=>x[0]===fPes);
+  const q = $('qPes').value.toLowerCase().trim();
+  const list = DAFTAR_PES.filter(o => (!f[2] || f[2].includes(o.status)) && (!q || [o.no,o.nama,o.hp,o.items,o.alamat].join(' ').toLowerCase().includes(q)));
+  $('lPes').innerHTML = list.length ? list.map(kartuPes).join('') : `<div class="empty">${fPes==='cek'?'🎉 Tidak ada pembayaran yang perlu dicek.':'Tidak ada pesanan.'}</div>`;
+}
+async function aksi(no, jenis, data, konfirmasi){
+  if (konfirmasi && !(await tanya(konfirmasi))) return;
+  const el = $('o_'+no); if (el) el.classList.add('load');
+  try{
+    const o = await call('adminAksi', admTok, no, jenis, data||{});
+    const i = DAFTAR_PES.findIndex(x=>x.no===no); if (i>=0) DAFTAR_PES[i] = o;
+    toast({acc:'Pembayaran di-ACC ✅',tolak:'Bukti ditolak',kirim:'Status diperbarui 🚚',selesai:'Pesanan selesai ✔',batal:'Pesanan dibatalkan, stok dikembalikan',ongkir:'Ongkir disimpan'}[jenis]||'Tersimpan');
+    tutup(); muatPes(true);
+  }catch(e){ toast('⚠️ '+e); if (el) el.classList.remove('load'); }
+}
+function tanya(teks){
+  return new Promise(res=>{
+    $('aJudul').textContent='Konfirmasi'; $('aLabel').textContent=teks; $('aTeks').style.display='none'; $('aCepat').innerHTML='';
+    $('aOk').textContent='Ya, lanjut'; $('aOk').className='btn g';
+    $('aOk').onclick=()=>{ tanya.batal=null; $('aTeks').style.display=''; tutup(); res(true); };
+    tanya.batal = ()=>{ $('aTeks').style.display=''; res(false); };
+    buka('mAlasan');
+  });
+}
+function minta(no, jenis){
+  tanya.batal = null;
+  const tolak = jenis==='tolak';
+  $('aJudul').textContent = tolak ? 'Tolak bukti pembayaran' : 'Batalkan pesanan';
+  $('aLabel').textContent = 'Alasan (akan terlihat oleh pembeli)';
+  $('aTeks').style.display=''; $('aTeks').value='';
+  const cepat = tolak ? ['Nominal tidak sesuai','Bukti tidak jelas / terpotong','Dana belum masuk ke rekening','Bukti bukan untuk pesanan ini']
+                      : ['Stok habis','Pembeli membatalkan','Tidak ada pembayaran','Alamat di luar jangkauan'];
+  $('aCepat').innerHTML = cepat.map(c=>`<button type="button" onclick="$('aTeks').value='${c}'">${c}</button>`).join('');
+  $('aOk').textContent = tolak ? '❌ Tolak' : 'Batalkan pesanan'; $('aOk').className='btn r';
+  $('aOk').onclick = ()=>aksi(no, jenis, {alasan:$('aTeks').value});
+  buka('mAlasan');
+}
+async function lihatBukti(no){
+  const o = DAFTAR_PES.find(x=>x.no===no);
+  $('bNo').textContent = no; $('bIsi').innerHTML = 'Memuat bukti...';
+  $('bInfo').innerHTML = `Total yang harus dibayar: <b>${rp(o.total)}</b> · ${esc(o.pembayaran)} · ${esc(o.nama)}`;
+  $('bAct').innerHTML = o.status===ST.VER ? `<button class="btn r" onclick="minta('${no}','tolak')">❌ Tolak</button><button class="btn g" onclick="aksi('${no}','acc')">✅ ACC pembayaran</button>` : `<button class="btn o" onclick="tutup()">Tutup</button>`;
+  buka('mBukti');
+  try{
+    const b = await call('adminBukti', admTok, no);
+    $('bIsi').innerHTML = b.data ? `<img id="buktiImg" src="${b.data}" alt="Bukti">` : `<p>File ${esc(b.tipe)}. <a href="${esc(b.url)}" target="_blank" rel="noopener">Buka bukti di Google Drive ↗</a></p>`;
+  }catch(e){ $('bIsi').textContent = e; }
+}
+function buka(id){ ['mBukti','mAlasan','mPro','mBan'].forEach(m=>$(m).classList.toggle('show', m===id)); $('ovl').classList.add('show'); }
+function tutup(){ if ($('mAlasan').classList.contains('show') && tanya.batal) { tanya.batal(); tanya.batal=null; } ['mBukti','mAlasan','mPro','mBan'].forEach(m=>$(m).classList.remove('show')); $('ovl').classList.remove('show'); }
+document.addEventListener('keydown', e=>{ if (e.key==='Escape') tutup(); });
+
+/* ---------- Produk ---------- */
+async function muatPro(){
+  $('lPro').classList.add('load');
+  try{ DAFTAR_PRO = await call('adminProduk', admTok); isiKategori(); renderPro(); }
+  catch(e){ $('lPro').innerHTML = `<div class="empty">${esc(e)}</div>`; }
+  $('lPro').classList.remove('load');
+}
+function isiKategori(){
+  const k = [...new Set((CFG.kategori||[]).concat(DAFTAR_PRO.map(p=>p.Kategori)).filter(Boolean))].sort();
+  $('kPro').innerHTML = `<option value="">Semua kategori</option>` + k.map(x=>`<option>${esc(x)}</option>`).join('');
+  $('dlKat').innerHTML = k.map(x=>`<option value="${esc(x)}">`).join('');
+}
+function ringkasVar(p){
+  if (p.Varian.length) return p.Varian.map(v=>`${esc(v.nama)} ${rp(v.harga)}`).join(' · ');
+  return `Satuan ${rp(p.Harga)}`;
+}
+function renderPro(){
+  const q = $('qPro').value.toLowerCase().trim(), k = $('kPro').value, off = $('offPro').checked;
+  const list = DAFTAR_PRO.filter(p => (off ? !p.Aktif : p.Aktif) && (!k || p.Kategori===k) && (!q || (p.ID+' '+p.Nama).toLowerCase().includes(q)));
+  const tv = DAFTAR_PRO.filter(p=>p.Aktif && p.Varian.length).length, tf = DAFTAR_PRO.filter(p=>p.Aktif && !p.Gambar.length).length;
+  $('fPro').innerHTML = `<span class="chip">${DAFTAR_PRO.filter(p=>p.Aktif).length} aktif</span><span class="chip">${tv} punya varian</span><span class="chip">${tf} belum ada foto</span>`;
+  $('lPro').innerHTML = list.length ? list.slice(0,300).map(p=>`
+    <div class="pr" onclick="editProduk('${p.ID}')">
+      ${p.Gambar[0]?`<img src="${esc(p.Gambar[0])}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.outerHTML='<div class=ph>📦</div>'">`:'<div class="ph">📦</div>'}
+      <div class="inf"><div class="nm">${esc(p.Nama)}</div>
+        <div class="mt">${esc(p.ID)} · ${esc(p.Kategori)} · stok ${p.Stok===''?'∞':p.Stok} ${!p.Aktif?'<span class="tag off">nonaktif</span>':''}${p.Varian.length?`<span class="tag">${p.Varian.length} varian</span>`:''}${p.Pilihan.length?`<span class="tag">${esc(p.Pilihan.map(g=>g.label).join('/'))}</span>`:''}</div>
+        <div class="mt">${ringkasVar(p)}</div></div>
+      <div class="hg">✏️</div>
+    </div>`).join('') + (list.length>300?`<div class="empty">Menampilkan 300 dari ${list.length}. Persempit pencarian.</div>`:'') : '<div class="empty">Tidak ada produk.</div>';
+}
+let prEdit = null;
+function editProduk(id){
+  const p = id ? DAFTAR_PRO.find(x=>x.ID===id) : {ID:'',Nama:'',Kategori:'',Harga:'',Satuan:'pcs',Stok:'',Gambar:[],Aktif:true,Deskripsi:'',LabelVarian:'',Varian:[],Pilihan:[]};
+  prEdit = p;
+  $('pJudul').textContent = id ? `Edit produk · ${id}` : 'Produk baru';
+  $('pNama').value = p.Nama; $('pKat').value = p.Kategori; $('pSat').value = p.Satuan; $('pStok').value = p.Stok;
+  $('pHarga').value = p.Harga || ''; $('pLabel').value = p.LabelVarian;
+  $('pGambar').value = p.Gambar.join('\n'); $('pDesk').value = p.Deskripsi; $('pAktif').checked = p.Aktif; $('pErr').textContent='';
+  $('vRows').innerHTML = ''; p.Varian.forEach(v=>barisVar(v.nama, v.harga, v.isi));
+  $('gRows').innerHTML = ''; p.Pilihan.forEach(g=>barisPil(g.label, g.opsi.join(', ')));
+  aturVar(); pratinjau(); buka('mPro'); $('mPro').scrollTop = 0;
+}
+function barisVar(n,h,i){
+  const d = document.createElement('div'); d.className='vr';
+  const pertama = !$('vRows').children.length;
+  if (pertama) {
+    d.innerHTML = `<input class="vn" value="Satuan" readonly title="Baris pertama selalu harga satuan (kolom Harga)" style="background:#f6f6f6"><input class="vh" inputmode="numeric" placeholder="Harga satuan" value="${h||''}"><input class="vi" value="1" readonly style="background:#f6f6f6"><button type="button" class="del" title="Hapus semua harga grosir" onclick="hapusSemuaVar()">✕</button>`;
+  } else {
+    d.innerHTML = `<input class="vn" placeholder="mis. Renteng isi 10" value="${esc(n)}"><input class="vh" inputmode="numeric" placeholder="Harga" value="${h||''}"><input class="vi" inputmode="numeric" value="${i||1}" title="Isi (jumlah satuan)"><button type="button" class="del" onclick="this.parentElement.remove();aturVar()">✕</button>`;
+  }
+  $('vRows').appendChild(d); return d;
+}
+const MAKS_VARIAN = 4;
+function tambahVar(n,h,i){
+  if (!$('vRows').children.length) barisVar('Satuan', Number($('pHarga').value.replace(/\D/g,''))||'', 1);
+  if ($('vRows').children.length >= MAKS_VARIAN) { toast('Maksimal Satuan + 3 harga grosir (kolom Varian A, B, C)'); return; }
+  const d = barisVar(n,h,i); aturVar(); (n ? d.querySelector('.vh') : d.querySelector('.vn')).focus();
+}
+function hapusSemuaVar(){
+  const r = $('vRows').children[0];
+  if (r) $('pHarga').value = r.querySelector('.vh').value;
+  $('vRows').innerHTML = ''; aturVar();
+}
+function aturVar(){
+  if ($('vRows').children.length === 1) return hapusSemuaVar();
+  const n = $('vRows').children.length, ada = n > 0;
+  $('vWrap').style.display = ada ? '' : 'none';
+  $('boxHarga').style.display = ada ? 'none' : '';
+  document.querySelectorAll('#qbVar button').forEach(b=>{ b.disabled = n >= MAKS_VARIAN; b.style.opacity = n >= MAKS_VARIAN ? .45 : 1; });
+}
+function barisPil(l,o){
+  const d = document.createElement('div'); d.className='vr pil';
+  d.innerHTML = `<input class="gl" placeholder="Judul, mis. Ukuran" value="${esc(l)}"><input class="go" placeholder="Opsi dipisah koma: S, M, L" value="${esc(o)}"><button type="button" class="del" onclick="this.parentElement.remove()">✕</button>`;
+  $('gRows').appendChild(d); return d;
+}
+function tambahPil(l,o){ const d = barisPil(l,o); (l ? d.querySelector('.go') : d.querySelector('.gl')).focus(); }
+function pratinjau(){
+  const urls = $('pGambar').value.split(/\s+/).filter(u=>/^https?:[\/][\/]/.test(u));
+  $('pPrev').innerHTML = urls.slice(0,15).map(u=>`<img src="${esc(u)}" alt="" referrerpolicy="no-referrer" onerror="this.style.opacity=.25;this.title='Gagal dimuat'">`).join('');
+  $('pCari').href = 'https:\/\/www.google.com/search?tbm=isch&q=' + encodeURIComponent($('pNama').value || prEdit && prEdit.Nama || '');
+}
+async function simpanProduk(){
+  const angka = s => String(s).replace(/\D/g,'');
+  const varian = [...$('vRows').children].map(r=>({nama:r.querySelector('.vn').value.trim(), harga:Number(angka(r.querySelector('.vh').value))||0, isi:Number(angka(r.querySelector('.vi').value))||1})).filter(v=>v.nama||v.harga);
+  const p = {
+    ID: prEdit.ID, Nama: $('pNama').value.trim(), Kategori: $('pKat').value.trim(), Satuan: $('pSat').value.trim() || 'pcs',
+    Stok: $('pStok').value.trim()==='' ? '' : Number(angka($('pStok').value))||0,
+    Harga: varian.length ? varian[0].harga : Number(angka($('pHarga').value))||0,
+    LabelVarian: $('pLabel').value.trim(), Varian: varian,
+    Pilihan: [...$('gRows').children].map(r=>({label:r.querySelector('.gl').value.trim(), opsi:r.querySelector('.go').value})).filter(g=>g.label||g.opsi.trim()),
+    Gambar: $('pGambar').value.split(/\s+/).filter(u=>/^https?:[\/][\/]/.test(u)), Deskripsi: $('pDesk').value, Aktif: $('pAktif').checked
+  };
+  if (!p.Nama) return $('pErr').textContent = 'Nama produk wajib diisi.';
+  if (varian.length === 1) varian.length = 0;
+  if (varian.length > MAKS_VARIAN) return $('pErr').textContent = 'Maksimal Satuan + 3 harga grosir.';
+  $('pSimpan').disabled = true; $('pErr').textContent = '';
+  try{
+    const r = await call('adminSimpanProduk', admTok, p);
+    const i = DAFTAR_PRO.findIndex(x=>x.ID===r.ID); if (i>=0) DAFTAR_PRO[i]=r; else DAFTAR_PRO.push(r);
+    isiKategori(); renderPro(); tutup(); toast('Produk disimpan ✔ — langsung tampil di toko');
+  }catch(e){ $('pErr').textContent = e; }
+  $('pSimpan').disabled = false;
+}
+
+/* ---------- Upload gambar (banner & produk) ---------- */
+function kecilkan(file){
+  return new Promise((res, rej)=>{
+    if (String(file.type).indexOf('image') !== 0) return rej('Pilih file gambar (JPG, PNG, atau WEBP).');
+    if (file.type === 'image/gif') { const r = new FileReader(); r.onload = ()=>res({nama:file.name, tipe:file.type, base64:String(r.result).split(',')[1]}); r.onerror = ()=>rej('Gagal membaca file.'); return r.readAsDataURL(file); }
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = ()=>{
+      const maks = 1600, k = Math.min(1, maks / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+      const x = c.getContext('2d'), png = file.type === 'image/png';
+      if (!png) { x.fillStyle = '#fff'; x.fillRect(0,0,c.width,c.height); }
+      x.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      const tipe = png ? 'image/png' : 'image/jpeg';
+      res({nama:file.name, tipe:tipe, base64:c.toDataURL(tipe, 0.86).split(',')[1]});
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); rej('Gambar tidak bisa dibaca.'); };
+    img.src = url;
+  });
+}
+function uploadKe(idInput, ganti){
+  const f = document.createElement('input'); f.type = 'file'; f.accept = 'image/jpeg,image/png,image/webp,image/gif';
+  f.onchange = async ()=>{
+    const file = f.files[0]; if (!file) return;
+    const btn = ganti ? $('bnUp') : $('pUp'), teks = btn.textContent;
+    btn.disabled = true; btn.textContent = '⏳ Mengunggah...';
+    try{
+      const data = await kecilkan(file);
+      if (data.base64.length > 7000000) throw 'Gambar terlalu besar.';
+      const r = await call('adminUploadGambar', admTok, data);
+      const el = $(idInput);
+      el.value = ganti ? r.url : ((el.value.trim() ? el.value.trim() + '\n' : '') + r.url);
+      el.dispatchEvent(new Event('input'));
+      toast('Gambar terunggah ✔');
+    }catch(e){ toast('⚠️ ' + e); }
+    btn.disabled = false; btn.textContent = teks;
+  };
+  f.click();
+}
+
+/* ---------- Banner ---------- */
+let DAFTAR_BAN = [], banEdit = null, warnaPilih = '#c2410c';
+const WARNA = ['#c2410c','#dc2626','#db2777','#7c3aed','#2563eb','#0891b2','#0f766e','#16a34a','#ca8a04','#1f2937'];
+function bannerHtml(b){
+  const teks = b.judul || b.sub || b.tombol;
+  return `<div class="bprev ${b.gambar?'img':''} ${teks?'':'notext'}" style="--c:${esc(b.warna||'#c2410c')}">`
+    + (b.gambar ? `<img src="${esc(b.gambar)}" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.classList.remove('img');this.remove()">` : '')
+    + (teks ? `<div class="bt">${b.judul?`<h2>${esc(b.judul)}</h2>`:''}${b.sub?`<p>${esc(b.sub)}</p>`:''}${b.tombol?`<span class="tb">${esc(b.tombol)} →</span>`:''}</div>` : '')
+    + `</div>`;
+}
+function ketLink(l){
+  l = String(l||'');
+  if (l.startsWith('kat:')) return '📂 Buka kategori: ' + l.slice(4);
+  if (l.startsWith('cari:')) return '🔍 Cari: ' + l.slice(5);
+  if (l.startsWith('produk:')) return '🏷️ Buka produk: ' + l.slice(7);
+  if (/^https?:/i.test(l)) return '🔗 ' + l;
+  return '⬇️ Gulir ke daftar produk';
+}
+async function muatBan(){
+  $('lBan').classList.add('load');
+  try{ DAFTAR_BAN = await call('adminBanner', admTok); renderBan(); }
+  catch(e){ $('lBan').innerHTML = `<div class="empty">${esc(e)}</div>`; }
+  $('lBan').classList.remove('load');
+}
+function renderBan(){
+  $('lBan').innerHTML = DAFTAR_BAN.length ? DAFTAR_BAN.map((b,i)=>`<div class="bc ${b.aktif?'':'off'}">${bannerHtml(b)}<div class="ctl">
+      <div class="row"><span class="tag ${b.aktif?'on':'off'}">${b.aktif?'● Aktif':'○ Nonaktif'}</span><b>Urutan ${i+1}</b><span class="lk">${esc(b.id)}</span></div>
+      <div class="lk">${esc(ketLink(b.link))}</div>
+      <div class="row">
+        <button class="btn o sm" ${i?'':'disabled'} onclick="pindahBan(${i},-1)" title="Naikkan">↑</button>
+        <button class="btn o sm" ${i<DAFTAR_BAN.length-1?'':'disabled'} onclick="pindahBan(${i},1)" title="Turunkan">↓</button>
+        <button class="btn o sm" onclick="aktifBan(${i})">${b.aktif?'Nonaktifkan':'Aktifkan'}</button>
+        <button class="btn sm" onclick="editBanner('${esc(b.id)}')">✏️ Edit</button>
+        <button class="btn o sm" style="color:var(--red)" onclick="hapusBan('${esc(b.id)}')" title="Hapus">🗑️</button>
+      </div></div></div>`).join('')
+    : `<div class="empty">Belum ada banner. Toko sedang memakai banner bawaan.<br><br><button class="btn sm" onclick="editBanner(null)">+ Buat banner pertama</button></div>`;
+}
+async function pindahBan(i, d){
+  const a = DAFTAR_BAN.slice(), j = i + d;
+  [a[i], a[j]] = [a[j], a[i]]; DAFTAR_BAN = a; renderBan();
+  try{ DAFTAR_BAN = await call('adminUrutBanner', admTok, a.map(b=>b.id)); renderBan(); toast('Urutan disimpan'); }
+  catch(e){ toast('⚠️ ' + e); muatBan(); }
+}
+async function aktifBan(i){
+  const b = Object.assign({}, DAFTAR_BAN[i], {aktif: !DAFTAR_BAN[i].aktif});
+  try{ DAFTAR_BAN = await call('adminSimpanBanner', admTok, b); renderBan(); toast(b.aktif ? 'Banner diaktifkan' : 'Banner dinonaktifkan'); }
+  catch(e){ toast('⚠️ ' + e); }
+}
+async function hapusBan(id){
+  if (!(await tanya('Hapus banner ini? Tindakan ini tidak bisa dibatalkan.'))) return;
+  try{ DAFTAR_BAN = await call('adminHapusBanner', admTok, id); renderBan(); toast('Banner dihapus'); }
+  catch(e){ toast('⚠️ ' + e); }
+}
+function isiKatBanner(pilih){
+  const kats = [...new Set((CFG.kategori||[]).concat(DAFTAR_PRO.map(p=>p.Kategori)).filter(Boolean))].sort();
+  $('bnKat').innerHTML = kats.map(k=>`<option value="${esc(k)}">${esc(k)}</option>`).join('');
+  if (pilih) $('bnKat').value = pilih;
+  $('dlPro').innerHTML = DAFTAR_PRO.filter(p=>p.Aktif).map(p=>`<option value="${esc(p.ID)}">${esc(p.Nama)}</option>`).join('');
+}
+function editBanner(id){
+  const b = id ? DAFTAR_BAN.find(x=>x.id===id) : {id:'', aktif:true, gambar:'', judul:'', sub:'', tombol:'Belanja sekarang', link:'', warna:'#c2410c'};
+  banEdit = b;
+  $('bnJudul').textContent = id ? `Edit banner · ${id}` : 'Banner baru';
+  $('bnGambar').value = b.gambar; $('bnJ').value = b.judul; $('bnS').value = b.sub; $('bnT').value = b.tombol;
+  $('bnAktif').checked = b.aktif !== false; $('bnErr').textContent = '';
+  const l = String(b.link||''); let a = '', v = '';
+  if (l.startsWith('kat:')) { a='kat'; v=l.slice(4); }
+  else if (l.startsWith('cari:')) { a='cari'; v=l.slice(5); }
+  else if (l.startsWith('produk:')) { a='produk'; v=l.slice(7); }
+  else if (/^https?:/i.test(l)) { a='url'; v=l; }
+  $('bnAksi').value = a; $('bnNilai').value = a==='kat' ? '' : v;
+  isiKatBanner(a==='kat' ? v : '');
+  aturAksi(); isiWarna(b.warna); buka('mBan'); $('mBan').scrollTop = 0; pratinjauBanner();
+  if (!DAFTAR_PRO.length) call('adminProduk', admTok).then(r=>{ DAFTAR_PRO = r; isiKatBanner(a==='kat' ? v : $('bnKat').value); }).catch(()=>{});
+}
+function aturAksi(){
+  const a = $('bnAksi').value;
+  $('bnNilaiBox').style.display = a ? '' : 'none';
+  $('bnKat').style.display = a==='kat' ? '' : 'none';
+  $('bnNilai').style.display = (a && a!=='kat') ? '' : 'none';
+  $('bnNilaiLbl').textContent = {kat:'Pilih kategori', cari:'Kata yang dicari', produk:'ID produk (ketik nama untuk mencari)', url:'Alamat link (diawali https)'}[a] || '';
+  $('bnNilai').placeholder = {cari:'mis. minyak goreng', produk:'mis. P001', url:'https:\/\/...'}[a] || '';
+  if (a==='produk') $('bnNilai').setAttribute('list','dlPro'); else $('bnNilai').removeAttribute('list');
+}
+function isiWarna(w){
+  warnaPilih = w || '#c2410c';
+  $('bnSw').innerHTML = WARNA.map(c=>`<button type="button" style="background:${c};${c===warnaPilih?'box-shadow:0 0 0 3px #1d1f24':''}" onclick="isiWarna('${c}');pratinjauBanner()" title="${c}"></button>`).join('')
+    + `<input type="color" value="${warnaPilih}" oninput="warnaPilih=this.value;pratinjauBanner()" title="Warna lain">`;
+}
+function dataBanner(){
+  const a = $('bnAksi').value, v = (a==='kat' ? $('bnKat').value : $('bnNilai').value).trim();
+  return { id: banEdit ? banEdit.id : '', aktif: $('bnAktif').checked, gambar: $('bnGambar').value.trim(), judul: $('bnJ').value.trim(),
+           sub: $('bnS').value.trim(), tombol: $('bnT').value.trim(), link: a && v ? (a==='url' ? v : a + ':' + v) : '', warna: warnaPilih };
+}
+function pratinjauBanner(){
+  const t = document.createElement('div'); t.innerHTML = bannerHtml(dataBanner());
+  const n = t.firstElementChild; n.id = 'bnPrev'; $('bnPrev').replaceWith(n);
+}
+async function simpanBanner(){
+  const b = dataBanner(), a = $('bnAksi').value;
+  if (!b.gambar && !b.judul) return $('bnErr').textContent = 'Isi minimal gambar atau judul banner.';
+  if (a && !b.link) return $('bnErr').textContent = 'Lengkapi isian untuk aksi saat banner diklik.';
+  if (a==='url' && !/^https?:/i.test(b.link)) return $('bnErr').textContent = 'Link harus diawali https.';
+  $('bnSimpan').disabled = true; $('bnErr').textContent = '';
+  try{ DAFTAR_BAN = await call('adminSimpanBanner', admTok, b); renderBan(); tutup(); toast('Banner disimpan ✔ — langsung tampil di toko'); }
+  catch(e){ $('bnErr').textContent = e; }
+  $('bnSimpan').disabled = false;
+}
+
+/* ---------- Preview tanpa Apps Script (data contoh) ---------- */
+const DEMO_ADMIN = (()=>{
+  const now = Date.now();
+  let pes = [
+    {no:'SBK2610271031482',tanggal:'27 Okt 2026 10:31',nama:'Nida Milati',hp:'085749482009',pengiriman:'Diantar',alamat:'Jalan Setail, Genteng',lokasi:'https:\/\/www.google.com/maps?q=-8.36,114.15',jarak:2.1,pembayaran:'Transfer Bank',catatan:'',items:'APETITO CREAMY ONION 150 GR x1 @2000; AQUA BTL x1 @3000',subtotal:5000,ongkir:5000,total:10000,bukti:true,status:ST.VER,catatanAdmin:''},
+    {no:'SBK2610271019083',tanggal:'27 Okt 2026 10:19',nama:'Budi',hp:'081234567890',pengiriman:'Diantar',alamat:'Desa Jauh RT 02',lokasi:'https:\/\/www.google.com/maps?q=-8.5,114.3',jarak:14.2,pembayaran:'QRIS',catatan:'Rumah cat hijau',items:'INDOMIE GORENG (Renteng isi 10) x2 @33000; GULA 1 KG x1 @18500',subtotal:84500,ongkir:null,total:null,bukti:false,status:ST.ONGKIR,catatanAdmin:''},
+    {no:'SBK2610270911286',tanggal:'27 Okt 2026 09:11',nama:'Sari',hp:'081299998888',pengiriman:'Ambil di toko',alamat:'-',lokasi:'',jarak:'',pembayaran:'Transfer Bank',catatan:'',items:'DASTER 45 (Warna: Biru, Ukuran: L) x1 @45000',subtotal:45000,ongkir:0,total:45000,bukti:true,status:ST.LUNAS,catatanAdmin:''},
+    {no:'SBK2610270850111',tanggal:'27 Okt 2026 08:50',nama:'Tono',hp:'081277776666',pengiriman:'Diantar',alamat:'Jl. Melati 3',lokasi:'',jarak:3.8,pembayaran:'QRIS',catatan:'',items:'MINYAK FITRI BTL 800 ML x2 @19000',subtotal:38000,ongkir:8000,total:46000,bukti:false,status:ST.BAYAR,catatanAdmin:''}
+  ];
+  let pro = [
+    {ID:'P001',Nama:'ABC SAMBAL ASLI REFF 80 GR',Kategori:'Sembako & Bumbu',Harga:3500,Satuan:'pcs',Stok:'',Gambar:[],Aktif:true,Terjual:1,Deskripsi:'',LabelVarian:'',Varian:[],Pilihan:[]},
+    {ID:'P002',Nama:'INDOMIE GORENG',Kategori:'Mie & Pasta',Harga:3500,Satuan:'pcs',Stok:200,Gambar:[],Aktif:true,Terjual:0,Deskripsi:'Mie goreng',LabelVarian:'Kuantitas',Varian:[{nama:'Satuan',harga:3500,isi:1},{nama:'Renteng isi 10',harga:33000,isi:10}],Pilihan:[]},
+    {ID:'P003',Nama:'DASTER 45',Kategori:'Pakaian & Sandal',Harga:45000,Satuan:'pcs',Stok:'',Gambar:[],Aktif:true,Terjual:0,Deskripsi:'',LabelVarian:'',Varian:[],Pilihan:[{label:'Ukuran',opsi:['M','L','XL']}]},
+    {ID:'P004',Nama:'SALAH',Kategori:'Snack & Biskuit',Harga:100,Satuan:'pcs',Stok:'',Gambar:[],Aktif:false,Terjual:0,Deskripsi:'',LabelVarian:'',Varian:[],Pilihan:[]}
+  ];
+  const hitung = ()=>pes.reduce((h,o)=>(h[o.status]=(h[o.status]||0)+1,h),{});
+  const cari = no => { const o = pes.find(x=>x.no===no); if(!o) throw new Error('Tidak ditemukan'); return o; };
+  return {
+    adminLogin: pw => { if (pw!=='admin123') throw new Error('Password salah. (Preview: admin123)'); return {token:'demo'}; },
+    adminLogout: ()=>true,
+    adminPesanan: ()=>({list:JSON.parse(JSON.stringify(pes)), hitung:hitung()}),
+    adminBukti: ()=>({tipe:'image/svg+xml', data:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http:\/\/www.w3.org/2000/svg" width="360" height="480"><rect width="360" height="480" fill="#eef6ff"/><text x="180" y="200" font-family="sans-serif" font-size="22" text-anchor="middle">Transfer BERHASIL</text><text x="180" y="250" font-family="sans-serif" font-size="30" font-weight="700" text-anchor="middle">Rp 10.000</text><text x="180" y="290" font-family="sans-serif" font-size="14" text-anchor="middle" fill="#666">(contoh bukti)</text></svg>')}),
+    adminAksi: (t,no,a,d)=>{ const o=cari(no);
+      if(a==='acc') o.status=ST.LUNAS; if(a==='tolak'){o.status=ST.TOLAK;o.catatanAdmin=d.alasan||'Bukti tidak sesuai';}
+      if(a==='kirim') o.status=ST.KIRIM; if(a==='selesai') o.status=ST.SELESAI; if(a==='batal'){o.status=ST.BATAL;o.catatanAdmin=d.alasan||'Dibatalkan admin';}
+      if(a==='ongkir'){ const n=Number(d.ongkir); if(!(n>=0)||d.ongkir==='') throw new Error('Ongkir tidak valid.'); o.ongkir=n;o.total=o.subtotal+n; if(o.status===ST.ONGKIR) o.status=o.bukti?ST.VER:ST.BAYAR; }
+      return JSON.parse(JSON.stringify(o)); },
+    adminProduk: ()=>JSON.parse(JSON.stringify(pro)),
+    adminSimpanProduk: (t,p)=>{ p=JSON.parse(JSON.stringify(p)); p.Pilihan=p.Pilihan.map(g=>({label:g.label,opsi:String(g.opsi).split(',').map(s=>s.trim()).filter(Boolean)}));
+      if(!p.ID) p.ID='P'+String(pro.length+1).padStart(3,'0'); const i=pro.findIndex(x=>x.ID===p.ID); if(i>=0) pro[i]=Object.assign(pro[i],p); else pro.push(Object.assign({Terjual:0},p)); return pro.find(x=>x.ID===p.ID); }
+  };
+})();
+
+/* Preview: data contoh banner */
+(()=>{
+  let ban = [
+    {id:'B001', aktif:true, urutan:1, gambar:'', judul:'Promo Minyak Goreng', sub:'Hemat sampai Rp 5.000 per liter, minggu ini saja', tombol:'Belanja sekarang', link:'kat:Sembako & Bumbu', warna:'#c2410c'},
+    {id:'B002', aktif:false, urutan:2, gambar:'', judul:'Gratis ongkir', sub:'Untuk jarak di bawah 3 km', tombol:'Lihat', link:'cari:indomie', warna:'#0f766e'}
+  ];
+  const salin = ()=>JSON.parse(JSON.stringify(ban));
+  Object.assign(DEMO_ADMIN, {
+    adminBanner: ()=>salin(),
+    adminSimpanBanner: (t,b)=>{ if (!b.gambar && !b.judul) throw new Error('Isi minimal gambar atau judul banner.');
+      if (b.id) { const i = ban.findIndex(x=>x.id===b.id); ban[i] = Object.assign(ban[i], b); }
+      else ban.push(Object.assign({}, b, {id:'B' + String(ban.length+1).padStart(3,'0'), urutan:ban.length+1}));
+      return salin(); },
+    adminHapusBanner: (t,id)=>{ ban = ban.filter(x=>x.id!==id); return salin(); },
+    adminUrutBanner: (t,ids)=>{ ban.sort((a,b)=>ids.indexOf(a.id)-ids.indexOf(b.id)); return salin(); },
+    adminUploadGambar: (t,f)=>({url:'data:' + f.tipe + ';base64,' + f.base64})
+  });
+})();
+
+/* ---------- Mulai ---------- */
+function terapkanCfgAdmin(){
+  $('lNama').textContent = $('hNama').textContent = CFG.namaToko;
+  if (CFG.urlToko) { $('lToko').href = CFG.urlToko; $('lToko').style.display=''; } else $('lToko').style.display='none';
+  document.title = 'Admin - ' + CFG.namaToko;
+}
+terapkanCfgAdmin();
+if (API_URL && !IS_GAS) {
+  CFG.urlToko = '/';
+  call('getConfig').then(c=>{ Object.assign(CFG, c, {urlToko:'/'}); terapkanCfgAdmin(); }).catch(()=>{});
+}
+if (admTok) mulai();
+try { $('jsStatus').textContent = '🟢 Admin v10 · siap (' + (IS_GAS ? 'Apps Script' : (API_URL ? 'online' : 'preview')) + ')'; $('jsStatus').style.color = '#1a9a4a'; } catch(e) {}
+</script>
+</body>
+</html>
