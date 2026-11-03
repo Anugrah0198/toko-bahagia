@@ -865,7 +865,8 @@ function renderOrderDrawer(m, o) {
         <div class="kv"><span>Nama</span><b>${o.nama}</b></div>${o.namaToko ? html`<div class="kv"><span>Toko</span><span>${o.namaToko}</span></div>` : ''}
         <div class="kv"><span>HP</span><span class="mono">${o.hp}</span></div>${o.npwp ? html`<div class="kv"><span>NPWP</span><span class="mono">${o.npwp}</span></div>` : ''}
         <div class="kv"><span>Kurir</span><span>${o.kurirNama} (${o.ongkir ? rp(o.ongkir) : 'gratis'})</span></div>
-        <div class="kv"><span>Berat</span><span>${kg(o.beratGram)}</span></div>${o.resi ? html`<div class="kv"><span>Resi/armada</span><b>${o.resi}</b></div>` : ''}
+        <div class="kv"><span>Berat</span><span>${kg(o.beratGram)}</span></div>
+        ${o.lokasi ? html`<div class="kv"><span>Lokasi</span><a target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(o.lokasi)}">${icon('pin', 'sm')} Rute Maps${o.jarakKm != null ? ' (\u00B1' + o.jarakKm + ' km)' : ''}</a></div>` : ''}${o.resi ? html`<div class="kv"><span>Resi/armada</span><b>${o.resi}</b></div>` : ''}
         <div class="small mt8">${o.alamat || 'Ambil di gudang'}</div>${o.catatan ? html`<div class="small muted mt4">Catatan: ${o.catatan}</div>` : ''}</div>
     </div>
     <div class="card pad mt12"><h3 class="mb8" style="font-size:14px">${icon('box', 'sm')} Barang (${o.items.length} SKU)</h3>
@@ -1097,15 +1098,42 @@ function pSettings() {
           <div class="fld"><label>Transfer bank manual</label><label class="check"><input type="checkbox" name="TRANSFER_ENABLED" ${s.TRANSFER_ENABLED ? 'checked' : ''}><span>Aktifkan metode transfer</span></label></div></div>
         ${F('BANK_INFO', 'Info rekening transfer')}</div>
       <div class="card pad sect"><h3>${icon('store')} Profil toko</h3><div class="grid2">${F('STORE_NAME', 'Nama toko')}${F('TAGLINE', 'Tagline')}${F('WA', 'No. WhatsApp (format 62\u2026)')}${F('TELP', 'Telepon')}${F('EMAIL', 'Email toko')}${F('JAM', 'Jam operasional')}</div>${F('ALAMAT', 'Alamat gudang')}${F('HERO_TITLE', 'Judul banner beranda')}${F('HERO_SUBTITLE', 'Subjudul banner')}</div>
-      <div class="card pad sect"><h3>${icon('truck')} Pengiriman & harga</h3><div class="grid2">${F('FREE_ARMADA_MIN', 'Gratis armada mulai (Rp)', 'number')}${F('ARMADA_FEE', 'Ongkir armada di bawah minimum (Rp)', 'number')}${F('ARMADA_AREA', 'Area armada toko')}${F('CARGO_PER_KG', 'Tarif kargo per kg (Rp)', 'number')}${F('CARGO_MIN', 'Ongkir kargo minimum (Rp)', 'number')}${F('RESELLER_DISC_PCT', 'Ekstra diskon reseller (%)', 'number')}${F('PPN_PCT', 'PPN termasuk harga (%)', 'number')}${F('MAX_PENDING_PER_HP', 'Maks. pesanan belum bayar per HP', 'number', 'Mencegah spam pesanan & penimbunan stok.')}</div></div>
+      <div class="card pad sect"><h3>${icon('truck')} Ongkir berdasarkan jarak</h3>
+        <div class="fld"><label>Lokasi toko</label><div class="row wrap"><input class="inp grow" name="STORE_LOCATION" id="storeLoc" value="${s.STORE_LOCATION}" placeholder="-8.339410,114.155000 atau link Google Maps" style="min-width:220px">
+          <button type="button" class="btn sm line" id="gpsStore">${icon('pin', 'sm')} Pakai lokasi saya sekarang</button>
+          ${s.STORE_LOCATION ? html`<a class="btn sm ghost" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${encodeURIComponent(s.STORE_LOCATION)}">Lihat peta</a>` : ''}</div>
+          <span class="hint">Buka di HP saat berada di toko lalu tekan "Pakai lokasi saya sekarang", atau tempel link/koordinat dari Google Maps.</span></div>
+        <div class="fld"><label>Tarif ongkir per jarak</label><div id="tarifRows"></div><button type="button" class="btn sm ghost mt4" id="addTarif">${icon('plus', 'sm')} Tambah jarak</button>
+          <input type="hidden" name="ONGKIR_TARIF" id="tarifVal" value="${s.ONGKIR_TARIF}"><span class="hint">Contoh: sampai 3 km Rp 5.000, sampai 5 km Rp 8.000. Lebih jauh dari baris terakhir = pembeli diminta hubungi admin.</span></div>
+        <div class="grid2">${F('MIN_BELANJA_ANTAR', 'Minimal belanja agar bisa diantar (Rp, 0 = tanpa minimal)', 'number')}${F('FREE_ARMADA_MIN', 'Gratis ongkir mulai belanja (Rp, 0 = tidak ada)', 'number')}
+          ${F('ONGKIR_FAKTOR_PERSEN', 'Koreksi jarak jalan (%)', 'number', '130 = jarak garis lurus \u00D7 1,3 (mendekati jarak jalan).')}${F('ARMADA_FEE', 'Ongkir tetap bila lokasi toko belum diisi (Rp)', 'number')}</div>
+        <label class="check mt8"><input type="checkbox" name="KARGO_AKTIF" ${s.KARGO_AKTIF ? 'checked' : ''}><span>Tampilkan opsi Ekspedisi Luar Kota</span></label>
+        <div class="grid2 mt8">${F('CARGO_PER_KG', 'Tarif ekspedisi per kg (Rp)', 'number')}${F('CARGO_MIN', 'Ongkir ekspedisi minimum (Rp)', 'number')}</div></div>
+      <div class="card pad sect"><h3>${icon('percent')} Harga</h3><div class="grid2">${F('RESELLER_DISC_PCT', 'Ekstra diskon reseller (%)', 'number')}${F('PPN_PCT', 'PPN termasuk harga (%)', 'number')}${F('MAX_PENDING_PER_HP', 'Maks. pesanan belum bayar per HP', 'number')}</div></div>
       <div class="card pad sect"><h3>${icon('store')} Alamat website</h3>${F('SITE_URL', 'Alamat toko publik (mis. https://toko-bahagia.vercel.app/)', 'url', 'Dipakai untuk link struk yang dikirim ke pelanggan. Kosongkan bila memakai link Apps Script.')}
         <div class="small muted">Alamat server (isi di config.js Vercel): <span class="mono">${d.apiUrl || ''}</span></div></div>
       <div class="card pad sect"><h3>${icon('chat')} Notifikasi</h3>${F('NOTIFY_EMAIL', 'Email admin untuk notifikasi pesanan/pembayaran', 'email', 'Kosongkan bila tidak perlu.')}</div>
       <div class="row" style="position:sticky;bottom:0;background:#EEF1EF;padding:12px 0"><button class="btn lg" id="sSave" data-busy="Menyimpan\u2026">${icon('check')} Simpan Pengaturan</button><span class="small muted">URL toko: <a href="${d.url}" target="_blank" rel="noopener">${d.url}</a> \u00B7 Admin: ${d.url}?page=admin</span></div></form>`);
     $('#sf').onsubmit = function (e) { e.preventDefault(); };
+    function tarifRow(t) { return html`<div class="tier-ed" style="grid-template-columns:1fr 1fr 36px"><div class="row"><span class="small muted">s/d</span><input class="inp" type="number" min="0.5" step="0.5" data-km value="${t.km}"><span class="small muted">km</span></div><div class="row"><span class="small muted">Rp</span><input class="inp" type="number" min="0" step="500" data-rp value="${t.biaya}"></div><button type="button" class="x-btn" data-rmt aria-label="Hapus">${icon('trash', 'sm')}</button></div>`; }
+    var tarifs = String(s.ONGKIR_TARIF || '').split(/[;\n]+/).map(function (p) { var m = p.match(/([\d.,]+)\s*=\s*([\d.]+)/); return m ? { km: m[1].replace(',', '.'), biaya: m[2].replace(/\./g, '') } : null; }).filter(Boolean);
+    if (!tarifs.length) tarifs = [{ km: 3, biaya: 5000 }];
+    $('#tarifRows').innerHTML = H(tarifs.map(tarifRow));
+    function syncTarif() { $('#tarifVal').value = $$('#tarifRows .tier-ed').map(function (r) { return $('[data-km]', r).value + '=' + $('[data-rp]', r).value; }).filter(function (x) { return !/^=|=$/.test(x); }).join('; '); }
+    $('#tarifRows').oninput = syncTarif;
+    $('#tarifRows').onclick = function (e) { var b = e.target.closest('[data-rmt]'); if (b && $$('#tarifRows .tier-ed').length > 1) { b.parentNode.remove(); syncTarif(); } };
+    $('#addTarif').onclick = function () { $('#tarifRows').insertAdjacentHTML('beforeend', String(tarifRow({ km: '', biaya: '' }))); };
+    $('#gpsStore').onclick = function () {
+      if (!navigator.geolocation) return toast('Perangkat tidak mendukung lokasi.', true);
+      toast('Mengambil lokasi\u2026');
+      navigator.geolocation.getCurrentPosition(function (p) { $('#storeLoc').value = p.coords.latitude.toFixed(6) + ',' + p.coords.longitude.toFixed(6); toast('Lokasi terisi \u2014 klik Simpan Pengaturan'); },
+        function () { toast('Lokasi tidak bisa diambil. Izinkan akses lokasi atau tempel link Google Maps.', true); }, { enableHighAccuracy: true, timeout: 15000 });
+    };
     $('#sSave').onclick = function () {
       var f = formData($('#sf'));
-      ['FREE_ARMADA_MIN', 'ARMADA_FEE', 'CARGO_PER_KG', 'CARGO_MIN', 'RESELLER_DISC_PCT', 'PPN_PCT', 'PAYMENT_TIMEOUT_MIN', 'MAX_PENDING_PER_HP'].forEach(function (k) { f[k] = +f[k]; });
+      syncTarif();
+      f = formData($('#sf'));
+      ['FREE_ARMADA_MIN', 'ARMADA_FEE', 'CARGO_PER_KG', 'CARGO_MIN', 'RESELLER_DISC_PCT', 'PPN_PCT', 'PAYMENT_TIMEOUT_MIN', 'MAX_PENDING_PER_HP', 'MIN_BELANJA_ANTAR', 'ONGKIR_FAKTOR_PERSEN'].forEach(function (k) { f[k] = +f[k] || 0; });
       busy(this, api('admin.settings.save', { settings: f })).then(function () { toast('Pengaturan disimpan'); pSettings(); }).catch(err);
     };
     $('#qtest').onclick = function () {
