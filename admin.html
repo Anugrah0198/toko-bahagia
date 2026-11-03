@@ -1098,6 +1098,13 @@ function pSettings() {
           <div class="fld"><label>Transfer bank manual</label><label class="check"><input type="checkbox" name="TRANSFER_ENABLED" ${s.TRANSFER_ENABLED ? 'checked' : ''}><span>Aktifkan metode transfer</span></label></div></div>
         ${F('BANK_INFO', 'Info rekening transfer')}</div>
       <div class="card pad sect"><h3>${icon('store')} Profil toko</h3><div class="grid2">${F('STORE_NAME', 'Nama toko')}${F('TAGLINE', 'Tagline')}${F('WA', 'No. WhatsApp (format 62\u2026)')}${F('TELP', 'Telepon')}${F('EMAIL', 'Email toko')}${F('JAM', 'Jam operasional')}</div>${F('ALAMAT', 'Alamat gudang')}${F('HERO_TITLE', 'Judul banner beranda')}${F('HERO_SUBTITLE', 'Subjudul banner')}</div>
+      ${s.STORE_LOCATION === undefined ? html`<div class="card pad sect" style="border-left:4px solid var(--red);background:var(--red-s)"><b class="red">Server Apps Script masih versi lama.</b>
+        <div class="small mt4">Ganti file Apps Script dengan versi terbaru, lalu Terapkan \u2192 Kelola deployment \u2192 Edit \u2192 Versi baru \u2192 Terapkan. Jangan simpan pengaturan sebelum diperbarui.</div></div>` : ''}
+      <div class="card pad sect"><h3>${icon('truck')} Pilihan pengiriman</h3>
+        <label class="check"><input type="checkbox" name="ANTAR_AKTIF" ${s.ANTAR_AKTIF !== false ? 'checked' : ''}><span><b>Diantar Kurir Toko</b> <span class="small muted">\u2014 ongkir dihitung dari jarak</span></span></label>
+        <label class="check mt8"><input type="checkbox" name="AMBIL_AKTIF" ${s.AMBIL_AKTIF !== false ? 'checked' : ''}><span><b>Ambil di Toko</b> <span class="small muted">\u2014 gratis</span></span></label>
+        <label class="check mt8"><input type="checkbox" name="KARGO_AKTIF" ${s.KARGO_AKTIF ? 'checked' : ''}><span><b>Ekspedisi Luar Kota</b> <span class="small muted">\u2014 tarif per kg</span></span></label>
+        <div class="hint mt8">Pilihan yang tidak dicentang tidak tampil di halaman keranjang pembeli.</div></div>
       <div class="card pad sect"><h3>${icon('truck')} Ongkir berdasarkan jarak</h3>
         <div class="fld"><label>Lokasi toko</label><div class="row wrap"><input class="inp grow" name="STORE_LOCATION" id="storeLoc" value="${s.STORE_LOCATION}" placeholder="-8.339410,114.155000 atau link Google Maps" style="min-width:220px">
           <button type="button" class="btn sm line" id="gpsStore">${icon('pin', 'sm')} Pakai lokasi saya sekarang</button>
@@ -1107,7 +1114,6 @@ function pSettings() {
           <input type="hidden" name="ONGKIR_TARIF" id="tarifVal" value="${s.ONGKIR_TARIF}"><span class="hint">Contoh: sampai 3 km Rp 5.000, sampai 5 km Rp 8.000. Lebih jauh dari baris terakhir = pembeli diminta hubungi admin.</span></div>
         <div class="grid2">${F('MIN_BELANJA_ANTAR', 'Minimal belanja agar bisa diantar (Rp, 0 = tanpa minimal)', 'number')}${F('FREE_ARMADA_MIN', 'Gratis ongkir mulai belanja (Rp, 0 = tidak ada)', 'number')}
           ${F('ONGKIR_FAKTOR_PERSEN', 'Koreksi jarak jalan (%)', 'number', '130 = jarak garis lurus \u00D7 1,3 (mendekati jarak jalan).')}${F('ARMADA_FEE', 'Ongkir tetap bila lokasi toko belum diisi (Rp)', 'number')}</div>
-        <label class="check mt8"><input type="checkbox" name="KARGO_AKTIF" ${s.KARGO_AKTIF ? 'checked' : ''}><span>Tampilkan opsi Ekspedisi Luar Kota</span></label>
         <div class="grid2 mt8">${F('CARGO_PER_KG', 'Tarif ekspedisi per kg (Rp)', 'number')}${F('CARGO_MIN', 'Ongkir ekspedisi minimum (Rp)', 'number')}</div></div>
       <div class="card pad sect"><h3>${icon('percent')} Harga</h3><div class="grid2">${F('RESELLER_DISC_PCT', 'Ekstra diskon reseller (%)', 'number')}${F('PPN_PCT', 'PPN termasuk harga (%)', 'number')}${F('MAX_PENDING_PER_HP', 'Maks. pesanan belum bayar per HP', 'number')}</div></div>
       <div class="card pad sect"><h3>${icon('store')} Alamat website</h3>${F('SITE_URL', 'Alamat toko publik (mis. https://toko-bahagia.vercel.app/)', 'url', 'Dipakai untuk link struk yang dikirim ke pelanggan. Kosongkan bila memakai link Apps Script.')}
@@ -1130,6 +1136,8 @@ function pSettings() {
         function () { toast('Lokasi tidak bisa diambil. Izinkan akses lokasi atau tempel link Google Maps.', true); }, { enableHighAccuracy: true, timeout: 15000 });
     };
     $('#sSave').onclick = function () {
+      if (s.STORE_LOCATION === undefined) return toast('Perbarui server Apps Script dulu sebelum menyimpan.', true);
+      if (!$('[name=ANTAR_AKTIF]').checked && !$('[name=AMBIL_AKTIF]').checked && !$('[name=KARGO_AKTIF]').checked) return toast('Minimal satu pilihan pengiriman harus aktif.', true);
       var f = formData($('#sf'));
       syncTarif();
       f = formData($('#sf'));
